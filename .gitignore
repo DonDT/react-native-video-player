@@ -32,7 +32,7 @@ local.properties
 # node.js
 #
 node_modules/
-src/keys
+keys
 npm-debug.log
 yarn-error.log
 
