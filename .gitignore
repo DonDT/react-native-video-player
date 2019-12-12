@@ -4,6 +4,8 @@
 
 # Xcode
 #
+.env/
+/.env
 build/
 *.pbxuser
 !default.pbxuser
