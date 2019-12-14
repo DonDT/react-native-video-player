@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-  Image,
-} from 'react-native';
+import {Image} from 'react-native';
 
 import Lol from './src/screens/lol';
 import Wtf from './src/screens/wtf';
@@ -15,7 +7,6 @@ import MemeRadar from './src/screens/memeRadar';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 
-//import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 
 const AppTabNavigator = createMaterialTopTabNavigator(
@@ -150,7 +141,7 @@ const AppDrawerNavigation = createDrawerNavigator(
 );
 
 const AppContainer = createSwitchNavigator({
-  AppTabNavigator,
+  AppDrawerNavigation,
 });
 
 export default createAppContainer(AppContainer);

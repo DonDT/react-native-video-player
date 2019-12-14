@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
 import APIKEY from '../Keys/ApiKey';
@@ -19,10 +27,24 @@ let videoIdsList = [
 class Lol extends Component {
   state = {
     play: false,
-    // isFocused: false,
+    loop: false,
+    landScapeOrientation: false,
   };
 
   _youTubeRef = React.createRef();
+
+  onLayout(e) {
+    const {width, height} = Dimensions.get('window');
+    console.log(width, height);
+    if (width > 415) {
+      console.log('LandScape Mode');
+      this.setState({landScapeOrientation: true});
+    } else {
+      this.setState({
+        landScapeOrientation: false,
+      });
+    }
+  }
 
   componentDidMount() {
     this.setState({
@@ -42,21 +64,161 @@ class Lol extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <YouTube
-          apiKey={APIKEY}
-          videoIds={this.state.videoIds}
-          play={this.state.play}
-          fullscreen={false}
-          ref={this._youTubeRef}
-          loop={true}
-          onReady={e => this.setState({isReady: true})}
-          onChangeState={e => this.setState({status: e.state})}
-          onChangeQuality={e => this.setState({quality: e.quality})}
-          onError={e => this.setState({error: e.error})}
-          style={{alignSelf: 'stretch', height: 300}}
-        />
-      </View>
+      <SafeAreaView>
+        <ScrollView>
+          <View style={styles.container} onLayout={this.onLayout.bind(this)}>
+            <YouTube
+              apiKey={APIKEY}
+              videoIds={this.state.videoIds}
+              play={this.state.play}
+              fullscreen={false}
+              ref={this._youTubeRef}
+              loop={this.state.loop}
+              onReady={e => this.setState({isReady: true})}
+              onChangeState={e => this.setState({status: e.state})}
+              onChangeQuality={e => this.setState({quality: e.quality})}
+              onError={e => this.setState({error: e.error})}
+              style={{
+                alignSelf: 'stretch',
+                height: 300,
+                //marginLeft: this.state.landScapeOrientation ? 10 : null,
+                marginRight: this.state.landScapeOrientation ? 35 : null,
+                marginTop: this.state.landScapeOrientation ? 5 : null,
+              }}
+              showinfo
+              controls={1}
+            />
+
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: this.state.landScapeOrientation ? 7 : 60,
+                flexDirection: this.state.landScapeOrientation ? 'row' : null,
+              }}>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    if (this._youTubeRef.current) {
+                      this._youTubeRef.current.previousVideo();
+                    }
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>
+                      Previous
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    this.setState(state => ({loop: !state.loop}));
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>
+                      {this.state.loop ? 'Loop' : 'No Loop'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    if (this._youTubeRef.current) {
+                      this._youTubeRef.current.nextVideo();
+                    }
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>Next</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginTop: this.state.landScapeOrientation ? null : 10,
+                }}>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    if (this._youTubeRef.current) {
+                      this._youTubeRef.current.seekTo(15);
+                    }
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>15s</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    if (this._youTubeRef.current) {
+                      this._youTubeRef.current.seekTo(2 * 60);
+                    }
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>2 Min</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.LoopButton,
+                    {
+                      marginRight: 10,
+                      height: this.state.landScapeOrientation ? 25 : 40,
+                      padding: this.state.landScapeOrientation ? 7 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    if (this._youTubeRef.current) {
+                      this._youTubeRef.current.seekTo(5 * 60);
+                    }
+                  }}>
+                  <View>
+                    <Text style={{fontSize: 10, color: 'violet'}}>5 Min</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -67,6 +229,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  LoopButton: {
+    backgroundColor: 'gold',
+    borderRadius: 10,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default withNavigationFocus(Lol);
+
+// try {
+//   console.log('saving');
+//   if (this.state.videosPlayed.length > 0) {
+//     await AsyncStorage.setItem(
+//       '@PlayList',
+//       JSON.stringify(...this.state.videosPlayed),
+//     );
+//   }
+//   console.log('saved');
+// } catch (error) {
+//   console.log(error);
+// }
+
+//console.log(this._youTubeRef.current.props.videoIds);
+// : this.setState(
+//     {
+//       videosPlayed: [...this.state.videosPlayed, index],
+//     },
+//     () => {
+//       console.log(this.state.videosPlayed);
+//       console.log('saving');
+//       AsyncStorage.setItem(
+//         '@PlayList',
+//         JSON.stringify(...this.state.videosPlayed),
+//       );
+
+//       console.log('saved');
+//     },
+//   );
+
+// try {
+//   const value = await AsyncStorage.getItem('@PlayList');
+//   if (value !== null) {
+//     console.log(JSON.parse(value));
+//     this.setState(
+//       {
+//         videosPlayed: [JSON.parse(value)],
+//       },
+//       () => {
+//         console.log(JSON.parse(value));
+//       },
+//     );
+//   }
+// } catch (error) {
+//   console.log(error);
+// }
+
+// clearingAsyncStorage = async () => {
+//   await AsyncStorage.removeItem('@PlayList');
+// };
