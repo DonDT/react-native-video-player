@@ -6,8 +6,8 @@ import Wtf from './src/screens/wtf';
 import MemeRadar from './src/screens/memeRadar';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import {createDrawerNavigator} from 'react-navigation-drawer';
-
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import customDrawer from './src/components/customDrawer';
 
 const AppTabNavigator = createMaterialTopTabNavigator(
   {
@@ -78,15 +78,12 @@ const AppDrawerNavigation = createDrawerNavigator(
     Lol: {
       screen: Lol,
       navigationOptions: {
-        title: 'Home',
-        tabBarIcon: () => (
+        tabBarLabel: 'Home',
+        drawerIcon: () => (
           <Image
-            style={{width: 20, height: 20}}
-            onPress={() => props.navigation.navigate('Lol')}
-            source={{
-              uri:
-                'https://www.iconsdb.com/icons/preview/gray/clenched-fist-xxl.png',
-            }}
+            style={{width: 20, height: 20, tintColor: '#ff00bf'}}
+            source={require('./src/Images/love.png')}
+            onPress={() => props.navigation.navigate('MemeRadar')}
           />
         ),
       },
@@ -95,14 +92,11 @@ const AppDrawerNavigation = createDrawerNavigator(
       screen: Wtf,
       navigationOptions: {
         title: 'What!?',
-        tabBarIcon: ({tintColor}) => (
+        drawerIcon: ({tintColor}) => (
           <Image
-            style={{width: 20, height: 20}}
-            onPress={() => props.navigation.navigate('Wtf')}
-            source={{
-              uri:
-                'https://www.iconsdb.com/icons/preview/royal-blue/so-so-xxl.png',
-            }}
+            style={{width: 20, height: 20, tintColor: '#ff00bf'}}
+            source={require('./src/Images/heart_2.png')}
+            onPress={() => props.navigation.navigate('MemeRadar')}
           />
         ),
       },
@@ -111,15 +105,11 @@ const AppDrawerNavigation = createDrawerNavigator(
       screen: MemeRadar,
       navigationOptions: {
         title: 'Bonfire',
-
-        tabBarIcon: ({tintColor}) => (
+        drawerIcon: ({tintColor}) => (
           <Image
-            style={{width: 20, height: 20}}
+            style={{width: 20, height: 20, tintColor: '#ff00bf'}}
             onPress={() => props.navigation.navigate('MemeRadar')}
-            source={{
-              uri:
-                'https://www.iconsdb.com/icons/preview/orange/applouse-xxl.png',
-            }}
+            source={require('./src/Images/heart_1.png')}
           />
         ),
       },
@@ -127,6 +117,7 @@ const AppDrawerNavigation = createDrawerNavigator(
   },
   {
     initialRouteName: 'Lol',
+
     tabBarPosition: 'bottom',
     swipeEnabled: true,
     tabBarOptions: {
@@ -136,7 +127,13 @@ const AppDrawerNavigation = createDrawerNavigator(
         backgroundColor: '#f2f2f2',
       },
       showIcon: true,
+      contentOptions: {
+        activeTintColor: '#0000ff',
+        activeBackgroundColor: '#ffbf00',
+        inactiveBackgroundColor: 'grey',
+      },
     },
+    contentComponent: customDrawer,
   },
 );
 

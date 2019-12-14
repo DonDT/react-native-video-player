@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Text,
+  Image,
 } from 'react-native';
 import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
@@ -58,7 +59,7 @@ class MemeRadar extends React.Component {
   async componentDidMount() {
     this.setState({
       videoIds: videoIdsList,
-      play: false,
+      play: true,
       resetAsyncStorage: false,
     });
   }
@@ -86,7 +87,8 @@ class MemeRadar extends React.Component {
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.setState({
-        play: this.state.play === false ? true : false,
+        //play: this.state.play === false ? true : false,
+        play: this.state.play === true ? false : true,
       });
     }
     if (this.state.indexId !== prevState.indexId) {
@@ -114,9 +116,9 @@ class MemeRadar extends React.Component {
 
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.container}>
         <ScrollView>
-          <View style={styles.container} onLayout={this.onLayout.bind(this)}>
+          <View onLayout={this.onLayout.bind(this)}>
             <YouTube
               apiKey={APIKEY}
               videoIds={this.state.videoIds}
@@ -130,9 +132,10 @@ class MemeRadar extends React.Component {
               onError={e => this.setState({error: e.error})}
               style={{
                 alignSelf: 'stretch',
-                height: 300,
-                marginLeft: this.state.landScapeOrientation ? 30 : null,
+                height: this.state.landScapeOrientation ? 350 : 300,
+                marginLeft: this.state.landScapeOrientation ? 1 : null,
                 marginTop: this.state.landScapeOrientation ? 5 : null,
+                marginRight: this.state.landScapeOrientation ? 3 : null,
               }}
               showinfo
               controls={1}
@@ -141,7 +144,7 @@ class MemeRadar extends React.Component {
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: this.state.landScapeOrientation ? 7 : 60,
+                marginTop: this.state.landScapeOrientation ? 8 : 60,
                 flexDirection: this.state.landScapeOrientation ? 'row' : null,
               }}>
               <View style={{flexDirection: 'row'}}>
@@ -149,7 +152,6 @@ class MemeRadar extends React.Component {
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -159,8 +161,17 @@ class MemeRadar extends React.Component {
                       this._youTubeRef.current.previousVideo();
                     }
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>
+                  <View style={styles.controlIcons}>
+                    <Image
+                      style={{
+                        width: 9,
+                        height: 9,
+                        tintColor: '#ff00bf',
+                        marginRight: 5,
+                      }}
+                      source={require('../Images/left-arrow.png')}
+                    />
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
                       Previous
                     </Text>
                   </View>
@@ -169,7 +180,6 @@ class MemeRadar extends React.Component {
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -177,17 +187,20 @@ class MemeRadar extends React.Component {
                   onPress={() => {
                     this.setState(state => ({loop: !state.loop}));
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>
+                  <View style={styles.controlIcons}>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
                       {this.state.loop ? 'Loop' : 'No Loop'}
                     </Text>
+                    <Image
+                      style={styles.ImageStyle}
+                      source={require('../Images/update-arrows.png')}
+                    />
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -197,8 +210,12 @@ class MemeRadar extends React.Component {
                       this._youTubeRef.current.nextVideo();
                     }
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>Next</Text>
+                  <View style={styles.controlIcons}>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>Next</Text>
+                    <Image
+                      style={styles.ImageStyle}
+                      source={require('../Images/right-arrow.png')}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -212,7 +229,6 @@ class MemeRadar extends React.Component {
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -222,15 +238,18 @@ class MemeRadar extends React.Component {
                       this._youTubeRef.current.seekTo(15);
                     }
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>15s</Text>
+                  <View style={styles.controlIcons}>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>15s</Text>
+                    <Image
+                      style={styles.ImageStyle}
+                      source={require('../Images/fast-forward.png')}
+                    />
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -240,15 +259,18 @@ class MemeRadar extends React.Component {
                       this._youTubeRef.current.seekTo(2 * 60);
                     }
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>2 Min</Text>
+                  <View style={styles.controlIcons}>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>2 Min</Text>
+                    <Image
+                      style={styles.ImageStyle}
+                      source={require('../Images/fast-forward.png')}
+                    />
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
                     styles.LoopButton,
                     {
-                      marginRight: 10,
                       height: this.state.landScapeOrientation ? 25 : 40,
                       padding: this.state.landScapeOrientation ? 7 : 8,
                     },
@@ -258,8 +280,12 @@ class MemeRadar extends React.Component {
                       this._youTubeRef.current.seekTo(5 * 60);
                     }
                   }}>
-                  <View>
-                    <Text style={{fontSize: 10, color: 'violet'}}>5 Min</Text>
+                  <View style={styles.controlIcons}>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>5 Min</Text>
+                    <Image
+                      style={styles.ImageStyle}
+                      source={require('../Images/fast-forward.png')}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -281,6 +307,18 @@ const styles = StyleSheet.create({
     padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 10,
+  },
+  controlIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ImageStyle: {
+    width: 9,
+    height: 9,
+    tintColor: '#ff00bf',
+    marginLeft: 5,
   },
 });
 
