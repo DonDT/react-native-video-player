@@ -28,7 +28,7 @@ let videoIdsList = [
 class Lol extends Component {
   state = {
     play: false,
-    loop: false,
+    loop: true,
     landScapeOrientation: false,
   };
 
@@ -36,9 +36,7 @@ class Lol extends Component {
 
   onLayout(e) {
     const {width, height} = Dimensions.get('window');
-    console.log(width, height);
     if (width > 415) {
-      console.log('LandScape Mode');
       this.setState({landScapeOrientation: true});
     } else {
       this.setState({
@@ -57,7 +55,6 @@ class Lol extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.setState({
-        //play: this.state.play == false ? true : false,
         play: this.state.play === true ? false : true,
       });
     }
@@ -273,54 +270,3 @@ const styles = StyleSheet.create({
 });
 
 export default withNavigationFocus(Lol);
-
-// try {
-//   console.log('saving');
-//   if (this.state.videosPlayed.length > 0) {
-//     await AsyncStorage.setItem(
-//       '@PlayList',
-//       JSON.stringify(...this.state.videosPlayed),
-//     );
-//   }
-//   console.log('saved');
-// } catch (error) {
-//   console.log(error);
-// }
-
-//console.log(this._youTubeRef.current.props.videoIds);
-// : this.setState(
-//     {
-//       videosPlayed: [...this.state.videosPlayed, index],
-//     },
-//     () => {
-//       console.log(this.state.videosPlayed);
-//       console.log('saving');
-//       AsyncStorage.setItem(
-//         '@PlayList',
-//         JSON.stringify(...this.state.videosPlayed),
-//       );
-
-//       console.log('saved');
-//     },
-//   );
-
-// try {
-//   const value = await AsyncStorage.getItem('@PlayList');
-//   if (value !== null) {
-//     console.log(JSON.parse(value));
-//     this.setState(
-//       {
-//         videosPlayed: [JSON.parse(value)],
-//       },
-//       () => {
-//         console.log(JSON.parse(value));
-//       },
-//     );
-//   }
-// } catch (error) {
-//   console.log(error);
-// }
-
-// clearingAsyncStorage = async () => {
-//   await AsyncStorage.removeItem('@PlayList');
-// };

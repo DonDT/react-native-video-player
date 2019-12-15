@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Button,
   Dimensions,
   ScrollView,
   TouchableOpacity,
@@ -12,12 +11,9 @@ import {
 } from 'react-native';
 import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
-import AsyncStorage from '@react-native-community/async-storage';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
 import APIKEY from '../Keys/ApiKey';
-import {getIndex} from '../store/actions/VideosActions';
-import {bindActionCreators} from 'redux';
 
 let videoIdsList = [
   '_Czxy3nya8Y',
@@ -34,18 +30,16 @@ let videoIdsList = [
 class MemeRadar extends React.Component {
   state = {
     play: false,
-    loop: false,
+    loop: true,
     videosPlayed: [],
-    sendAction: false,
-    indexId: 0,
+    indexArray: [],
     landScapeOrientation: false,
+    newPlayListids: [],
   };
 
   onLayout(e) {
     const {width, height} = Dimensions.get('window');
-    console.log(width, height);
     if (width > 415) {
-      console.log('LandScape Mode');
       this.setState({landScapeOrientation: true});
     } else {
       this.setState({
@@ -57,47 +51,40 @@ class MemeRadar extends React.Component {
   _youTubeRef = React.createRef();
 
   async componentDidMount() {
-    this.setState({
-      videoIds: videoIdsList,
-      play: true,
-      resetAsyncStorage: false,
-    });
+    this.setState(
+      {
+        videoIds: videoIdsList,
+        play: true,
+        resetAsyncStorage: false,
+        IndexesFromRedux: this.props.Indexes.Indexes,
+      },
+      () => {
+        if (this.state.IndexesFromRedux.length > 1) {
+          let newVideoIds = videoIdsList.slice(
+            this.state.IndexesFromRedux.length - 1,
+          );
+          this.setState({
+            newPlayListids: newVideoIds,
+          });
+        }
+      },
+    );
   }
 
-  handleShouldComponentUpdate = async () => {
-    await this._youTubeRef.current
-      .getVideosIndex()
-      .then(index => {
-        this.setState({
-          indexId: index,
-        });
-        console.log(index);
-      })
-      .catch(error => console.log(error));
-  };
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.indexId === nextState.indexId) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.isFocused !== this.props.isFocused) {
+  async shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.isFocused !== nextProps.isFocused) {
       this.setState({
-        //play: this.state.play === false ? true : false,
         play: this.state.play === true ? false : true,
       });
-    }
-    if (this.state.indexId !== prevState.indexId) {
-      console.log('Im in');
+
+      return false;
+    } else {
       try {
         if (this._youTubeRef.current._isReady) {
           await this._youTubeRef.current
             .getVideosIndex()
             .then(index => {
+              // call a function here, pass index
               this.state.videosPlayed.includes(index) || null
                 ? null
                 : this.handleUpdate(index);
@@ -107,21 +94,46 @@ class MemeRadar extends React.Component {
       } catch (error) {
         console.log(error);
       }
+      return true;
     }
   }
 
   handleUpdate = index => {
-    this.props.getIndex(index);
+    this.setState({videosPlayed: [...this.state.videosPlayed, index]}, () => {
+      index === 8 ? this.setState({videosPlayed: []}) : null;
+    });
+
+    if (this.state.indexArray.includes(index) || index === -1) {
+    } else {
+      this.setState(
+        {
+          indexArray: [...this.state.indexArray, index],
+        },
+        () => {
+          const id = this._youTubeRef.current.props.videoIds[index];
+          this.props.getIndex(id);
+          this.handleResets();
+        },
+      );
+    }
+  };
+
+  handleResets = () => {
+    this.props.resetIndex();
   };
 
   render() {
+    const {newPlayListids} = this.state;
+
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView>
           <View onLayout={this.onLayout.bind(this)}>
             <YouTube
               apiKey={APIKEY}
-              videoIds={this.state.videoIds}
+              videoIds={
+                newPlayListids.length > 1 ? newPlayListids : this.state.videoIds
+              }
               play={this.state.play}
               fullscreen={false}
               ref={this._youTubeRef}
@@ -322,16 +334,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapstateToProps = state => {
+mapstateToProps = state => {
   return {
-    videos: state.Videos,
+    Indexes: state.Indexes,
   };
 };
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({getIndex}, dispatch);
-}
 
-export default compose(
+mapDispatchToProps = dispatch => {
+  return {
+    getIndex: index => dispatch({type: 'SAVE_INDEX', payload: index}),
+    resetIndex: index => dispatch({type: 'RESET_INDEX', payload: ''}),
+  };
+};
+
+const wrapper = compose(
   connect(mapstateToProps, mapDispatchToProps),
   withNavigationFocus,
-)(MemeRadar);
+);
+
+export default wrapper(MemeRadar);

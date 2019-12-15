@@ -1,17 +1,23 @@
-import {SAVE_INDEX} from '../types';
+const initialState = {
+  Indexes: [],
+};
 
-export default function(state = {}, action) {
+const videoIndexs = (state = initialState, action) => {
   switch (action.type) {
-    case SAVE_INDEX:
+    case 'SAVE_INDEX':
       return {
         ...state,
-        videos: {
-          videosList: action.payload || false,
-        },
+        Indexes: state.Indexes.includes(action.payload)
+          ? [...state.Indexes]
+          : [...state.Indexes, action.payload],
       };
-      break;
-
+    case 'RESET_INDEX':
+      return {
+        Indexes: state.Indexes.length === 9 ? [] : [...state.Indexes],
+      };
     default:
       return state;
   }
-}
+};
+
+export default videoIndexs;

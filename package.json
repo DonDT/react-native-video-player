@@ -10,7 +10,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-native-community/async-storage": "^1.7.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-gesture-handler": "^1.5.2",
@@ -27,7 +26,9 @@
     "react-youtube": "^7.9.0",
     "recompose": "^0.30.0",
     "redux": "^4.0.4",
-    "redux-promise": "^0.6.0"
+    "redux-promise": "^0.6.0",
+    "redux-storage": "^4.1.2",
+    "redux-storage-engine-reactnativeasyncstorage": "^1.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

@@ -20,7 +20,7 @@ class Wtf extends Component {
     super(props);
     this.state = {
       play: false,
-      loop: false,
+      loop: true,
       landScapeOrientation: false,
     };
   }
@@ -37,7 +37,6 @@ class Wtf extends Component {
 
   onLayout(e) {
     const {width, height} = Dimensions.get('window');
-    console.log(width, height);
     if (width > 415) {
       console.log('LandScape Mode');
       this.setState({landScapeOrientation: true});
@@ -51,7 +50,6 @@ class Wtf extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.setState({
-        // play: this.state.play === false ? true : false,
         play: this.state.play === true ? false : true,
       });
     }
