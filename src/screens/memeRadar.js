@@ -50,12 +50,11 @@ class MemeRadar extends React.Component {
 
   _youTubeRef = React.createRef();
 
-  async componentDidMount() {
+  componentDidMount() {
     this.setState(
       {
         videoIds: videoIdsList,
         play: true,
-        resetAsyncStorage: false,
         IndexesFromRedux: this.props.Indexes.Indexes,
       },
       () => {
@@ -99,9 +98,7 @@ class MemeRadar extends React.Component {
   }
 
   handleUpdate = index => {
-    this.setState({videosPlayed: [...this.state.videosPlayed, index]}, () => {
-      index === 8 ? this.setState({videosPlayed: []}) : null;
-    });
+    this.setState({videosPlayed: [...this.state.videosPlayed, index]});
 
     if (this.state.indexArray.includes(index) || index === -1) {
     } else {

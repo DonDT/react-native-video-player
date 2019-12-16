@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   Platform,
   Image,
-  TouchableOpacity,
 } from 'react-native';
 
 import {DrawerNavigatorItems} from 'react-navigation-drawer';
@@ -33,62 +32,6 @@ class CustomDrawer extends Component {
             />
             <Text style={styles.DrawerLogoText}> NeverThink</Text>
           </View>
-          {/* <View style={styles.firstIcons}>
-            <View style={{flexDirection: 'row'}}>
-              <Image
-                source={require('../Images/love.png')}
-                style={[styles.icon, {margin: 20, tintColor: '#ff00bf'}]}
-              />
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Lol')}>
-                <Text
-                  style={{marginTop: 25, marginLeft: 15, color: '#0000ff'}}
-
-                  //onPress={() => alert('Pressed!')}
-                >
-                  Home
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.rightDisplay}>
-              <Text style={{color: 'white'}}>a</Text>
-            </View>
-          </View>
-          <View style={styles.firstIcons}>
-            <View style={{flexDirection: 'row'}}>
-              <Image
-                source={require('../Images/heart_1.png')}
-                style={[styles.icon, {margin: 20, tintColor: '#ff00bf'}]}
-                onPress={() => this.props.navigation.navigate('Wtf')}
-              />
-              <TouchableOpacity onPress={() => this.navigateToScreen('Wtf')}>
-                <Text style={{marginTop: 25, marginLeft: 15, color: '#0000ff'}}>
-                  Ideas
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.rightDisplay}>
-              <Text style={{color: 'white'}}>b</Text>
-            </View>
-          </View>
-          <View style={styles.firstIcons}>
-            <View style={{flexDirection: 'row'}}>
-              <Image
-                source={require('../Images/heart_2.png')}
-                style={[styles.icon, {margin: 20, tintColor: '#ff00bf'}]}
-              />
-
-              <Text
-                style={{marginTop: 25, marginLeft: 15, color: '#0000ff'}}
-                onPress={() => this.navigateToScreen('MemeRadar')}>
-                Goals
-              </Text>
-            </View>
-            <View style={styles.rightDisplay}>
-              <Text style={{color: 'white'}}>c</Text>
-            </View>
-          </View> */}
-
           <DrawerNavigatorItems {...this.props} />
         </ScrollView>
       </SafeAreaView>

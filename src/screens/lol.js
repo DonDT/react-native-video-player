@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
+import {connect} from 'react-redux';
+import {compose} from 'redux';
 import APIKEY from '../Keys/ApiKey';
 
 let videoIdsList = [
@@ -29,10 +31,11 @@ class Lol extends Component {
   state = {
     play: false,
     loop: true,
+    videosPlayed: [],
     landScapeOrientation: false,
+    newPlayListids: [],
+    indexArray: [],
   };
-
-  _youTubeRef = React.createRef();
 
   onLayout(e) {
     const {width, height} = Dimensions.get('window');
@@ -44,30 +47,111 @@ class Lol extends Component {
       });
     }
   }
+  _youTubeRef = React.createRef();
 
   componentDidMount() {
-    this.setState({
-      videoIds: videoIdsList,
-      play: true,
-    });
+    this.setState(
+      {
+        videoIds: videoIdsList,
+        play: true,
+        IdsFromRedux: this.props.LolIndexes.LolIndexes,
+        getData: true,
+      },
+      // () => {
+      //   console.log(this.props.LolIndexes.LolIndexes);
+      //   if (this.state.IdsFromRedux.length > 1) {
+      //     let newVideoIds = videoIdsList.slice(
+      //       this.state.IdsFromRedux.length - 1,
+      //     );
+      //     this.setState({
+      //       newPlayListids: newVideoIds,
+      //     });
+      //   }
+      // },
+    );
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.isFocused !== this.props.isFocused) {
+  async shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.isFocused && this.state.getData) {
+      this.setState(
+        {
+          IdsFromRedux: this.props.LolIndexes.LolIndexes,
+          getData: false,
+        },
+        () => {
+          console.log(this.props.LolIndexes.LolIndexes);
+          if (this.state.IdsFromRedux.length > 1) {
+            let newVideoIds = videoIdsList.slice(
+              this.state.IdsFromRedux.length - 1,
+            );
+            this.setState({
+              newPlayListids: newVideoIds,
+            });
+          }
+        },
+      );
+    }
+    if (this.props.isFocused !== nextProps.isFocused) {
       this.setState({
         play: this.state.play === true ? false : true,
       });
+      console.log(this.props.LolIndexes.LolIndexes);
+
+      return true;
+    } else {
+      try {
+        if (this._youTubeRef.current._isReady) {
+          await this._youTubeRef.current
+            .getVideosIndex()
+            .then(index => {
+              // call a function here, pass index
+              this.state.videosPlayed.includes(index) || null
+                ? null
+                : this.handleUpdate(index);
+            })
+            .catch(err => console.log(err));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
     }
   }
 
+  handleUpdate = index => {
+    this.setState({videosPlayed: [...this.state.videosPlayed, index]});
+
+    if (this.state.indexArray.includes(index) || index === -1) {
+    } else {
+      this.setState(
+        {
+          indexArray: [...this.state.indexArray, index],
+        },
+        () => {
+          const id = this._youTubeRef.current.props.videoIds[index];
+          this.props.saveId(id);
+          this.handleResets();
+        },
+      );
+    }
+  };
+
+  handleResets = () => {
+    this.props.resetIds();
+  };
+
   render() {
+    const {newPlayListids} = this.state;
+
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView>
           <View onLayout={this.onLayout.bind(this)}>
             <YouTube
               apiKey={APIKEY}
-              videoIds={this.state.videoIds}
+              videoIds={
+                newPlayListids.length > 1 ? newPlayListids : this.state.videoIds
+              }
               play={this.state.play}
               fullscreen={false}
               ref={this._youTubeRef}
@@ -269,4 +353,22 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigationFocus(Lol);
+mapstateToProps = state => {
+  return {
+    LolIndexes: state.LolIndexes,
+  };
+};
+
+mapDispatchToProps = dispatch => {
+  return {
+    saveId: index => dispatch({type: 'SAVE_ID', payload: index}),
+    resetIds: index => dispatch({type: 'RESET_IDs', payload: ''}),
+  };
+};
+
+const wrapper = compose(
+  connect(mapstateToProps, mapDispatchToProps),
+  withNavigationFocus,
+);
+
+export default wrapper(Lol);

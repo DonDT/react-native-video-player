@@ -8,7 +8,6 @@ import App from './App';
 import {name as appName} from './app.json';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
-//import promiseMiddleware from 'redux-promise';
 import reducers from './src/store/reducers/index';
 import * as storage from 'redux-storage';
 import createEngine from 'redux-storage-engine-reactnativeasyncstorage';
@@ -30,11 +29,6 @@ const store = createStoreWithMiddleware(reducer);
 const load = storage.createLoader(engine);
 
 load(store);
-// const store = createStore(
-//   persistedReducer,
-
-//   composeEnhancers(applyMiddleware(promiseMiddleware)),
-// );
 
 const appRedux = () => (
   <Provider store={store}>

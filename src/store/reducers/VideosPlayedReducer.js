@@ -15,6 +15,7 @@ const videoIndexs = (state = initialState, action) => {
       return {
         Indexes: state.Indexes.length === 9 ? [] : [...state.Indexes],
       };
+
     default:
       return state;
   }
