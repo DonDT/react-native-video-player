@@ -50,25 +50,12 @@ class Lol extends Component {
   _youTubeRef = React.createRef();
 
   componentDidMount() {
-    this.setState(
-      {
-        videoIds: videoIdsList,
-        play: true,
-        IdsFromRedux: this.props.LolIndexes.LolIndexes,
-        getData: true,
-      },
-      // () => {
-      //   console.log(this.props.LolIndexes.LolIndexes);
-      //   if (this.state.IdsFromRedux.length > 1) {
-      //     let newVideoIds = videoIdsList.slice(
-      //       this.state.IdsFromRedux.length - 1,
-      //     );
-      //     this.setState({
-      //       newPlayListids: newVideoIds,
-      //     });
-      //   }
-      // },
-    );
+    this.setState({
+      videoIds: videoIdsList,
+      play: true,
+      IdsFromRedux: this.props.LolIndexes.LolIndexes,
+      getData: true,
+    });
   }
 
   async shouldComponentUpdate(nextProps, nextState) {
@@ -79,7 +66,6 @@ class Lol extends Component {
           getData: false,
         },
         () => {
-          console.log(this.props.LolIndexes.LolIndexes);
           if (this.state.IdsFromRedux.length > 1) {
             let newVideoIds = videoIdsList.slice(
               this.state.IdsFromRedux.length - 1,
@@ -142,9 +128,18 @@ class Lol extends Component {
 
   render() {
     const {newPlayListids} = this.state;
+    const {landScapeOrientation} = this.state;
+    const orientationStyles = {
+      height: landScapeOrientation ? 25 : 40,
+      padding: landScapeOrientation ? 7 : 8,
+    };
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          {backgroundColor: landScapeOrientation ? 'black' : null},
+        ]}>
         <ScrollView>
           <View onLayout={this.onLayout.bind(this)}>
             <YouTube
@@ -162,10 +157,10 @@ class Lol extends Component {
               onError={e => this.setState({error: e.error})}
               style={{
                 alignSelf: 'stretch',
-                height: this.state.landScapeOrientation ? 350 : 300,
-                marginLeft: this.state.landScapeOrientation ? 1 : null,
-                marginTop: this.state.landScapeOrientation ? 5 : null,
-                marginRight: this.state.landScapeOrientation ? 3 : null,
+                height: landScapeOrientation ? 350 : 300,
+                marginLeft: landScapeOrientation ? 1 : null,
+                marginTop: landScapeOrientation ? 5 : null,
+                marginRight: landScapeOrientation ? 3 : null,
               }}
               showinfo
               controls={1}
@@ -175,18 +170,12 @@ class Lol extends Component {
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: this.state.landScapeOrientation ? 8 : 60,
-                flexDirection: this.state.landScapeOrientation ? 'row' : null,
+                marginTop: landScapeOrientation ? 8 : 60,
+                flexDirection: landScapeOrientation ? 'row' : null,
               }}>
               <View style={{flexDirection: 'row'}}>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.previousVideo();
@@ -208,13 +197,7 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     this.setState(state => ({loop: !state.loop}));
                   }}>
@@ -229,13 +212,7 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.nextVideo();
@@ -254,16 +231,10 @@ class Lol extends Component {
               <View
                 style={{
                   flexDirection: 'row',
-                  marginTop: this.state.landScapeOrientation ? null : 10,
+                  marginTop: landScapeOrientation ? null : 10,
                 }}>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(15);
@@ -278,13 +249,7 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(2 * 60);
@@ -299,13 +264,7 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.LoopButton,
-                    {
-                      height: this.state.landScapeOrientation ? 25 : 40,
-                      padding: this.state.landScapeOrientation ? 7 : 8,
-                    },
-                  ]}
+                  style={[styles.LoopButton, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(5 * 60);
