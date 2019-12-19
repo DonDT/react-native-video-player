@@ -35,6 +35,10 @@ class MemeRadar extends React.Component {
     indexArray: [],
     landScapeOrientation: false,
     newPlayListids: [],
+    getOriginalPlaylist: false,
+    disableNextButton: false,
+    indexedVideo: 0,
+    originalPlayList: false,
   };
 
   // Checking Orientation
@@ -78,22 +82,43 @@ class MemeRadar extends React.Component {
       });
 
       return false;
-    } else {
-      try {
+    }
+
+    if (this.state.status !== nextState.status) {
+      {
         if (this._youTubeRef.current._isReady) {
           await this._youTubeRef.current
             .getVideosIndex()
             .then(index => {
+              console.log(index);
+              this.setState({
+                indexedVideo: index,
+              });
+
+              if (this.state.indexedVideo !== nextState.indexedVideo) {
+                this.setState({
+                  disableNextButton: false,
+                  originalPlayList: false,
+                });
+              }
+
               this.state.videosPlayed.includes(index) || null
                 ? null
                 : this.handleUpdate(index);
+              console.log('Updated');
+              if (this.props.Indexes.CompleteIndexArray) {
+                if (this.props.Indexes.CompleteIndexArray.length) {
+                  this.setState({
+                    videosPlayed: [],
+                  });
+                }
+              }
             })
             .catch(err => console.log(err));
         }
-      } catch (error) {
-        console.log(error);
+
+        return true;
       }
-      return true;
     }
   }
 
@@ -108,6 +133,13 @@ class MemeRadar extends React.Component {
         },
         () => {
           const id = this._youTubeRef.current.props.videoIds[index];
+          if (id === 'BgZh5T4nG_w') {
+            this.setState({
+              indexArray: [],
+              disableNextButton: true,
+              originalPlayList: true,
+            });
+          }
           this.props.getIndex(id);
           this.handleResets();
         },
@@ -117,6 +149,12 @@ class MemeRadar extends React.Component {
 
   handleResets = () => {
     this.props.resetIndex();
+  };
+
+  bringBackOriginalPlayList = () => {
+    this.setState({
+      newPlayListids: [],
+    });
   };
 
   render() {
@@ -168,7 +206,7 @@ class MemeRadar extends React.Component {
               }}>
               <View style={{flexDirection: 'row'}}>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.previousVideo();
@@ -185,18 +223,18 @@ class MemeRadar extends React.Component {
                       source={require('../Images/left-arrow.png')}
                     />
                     <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      Previous
+                      PreviouS
                     </Text>
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     this.setState(state => ({loop: !state.loop}));
                   }}>
                   <View style={styles.controlIcons}>
                     <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      {this.state.loop ? 'Loop' : 'No Loop'}
+                      {this.state.loop ? 'LooP' : 'No LooP'}
                     </Text>
                     <Image
                       style={styles.ImageStyle}
@@ -205,14 +243,23 @@ class MemeRadar extends React.Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[
+                    styles.nextButtonStyle,
+                    orientationStyles,
+                    {
+                      backgroundColor: this.state.disableNextButton
+                        ? '#fffacd'
+                        : 'gold',
+                    },
+                  ]}
+                  disabled={this.state.disableNextButton}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.nextVideo();
                     }
                   }}>
                   <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>Next</Text>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>NexT</Text>
                     <Image
                       style={styles.ImageStyle}
                       source={require('../Images/right-arrow.png')}
@@ -227,7 +274,7 @@ class MemeRadar extends React.Component {
                   marginTop: landScapeOrientation ? null : 10,
                 }}>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(15);
@@ -242,7 +289,7 @@ class MemeRadar extends React.Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(2 * 60);
@@ -257,7 +304,7 @@ class MemeRadar extends React.Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(5 * 60);
@@ -272,6 +319,19 @@ class MemeRadar extends React.Component {
                   </View>
                 </TouchableOpacity>
               </View>
+              {this.state.originalPlayList && (
+                <View style={styles.originalPlayListButton}>
+                  <TouchableOpacity
+                    style={[styles.Button, orientationStyles]}
+                    onPress={() => this.bringBackOriginalPlayList()}>
+                    <View style={styles.controlIcons}>
+                      <Text style={{fontSize: 10, color: '#ff00bf'}}>
+                        Original PlayList ?
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -284,7 +344,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  LoopButton: {
+  Button: {
     backgroundColor: 'gold',
     borderRadius: 10,
     padding: 8,
@@ -302,6 +362,19 @@ const styles = StyleSheet.create({
     height: 9,
     tintColor: '#ff00bf',
     marginLeft: 5,
+  },
+  nextButtonStyle: {
+    borderRadius: 10,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  originalPlayListButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
   },
 });
 

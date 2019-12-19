@@ -114,7 +114,9 @@ class Lol extends Component {
           indexArray: [...this.state.indexArray, index],
         },
         () => {
+          //console.log(this.state.status);
           const id = this._youTubeRef.current.props.videoIds[index];
+          // console.log(this._youTubeRef.current.props);
           this.props.saveId(id);
           this.handleResets();
         },
