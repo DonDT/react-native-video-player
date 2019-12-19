@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
+import {connect} from 'react-redux';
+import {compose} from 'redux';
 import APIKEY from '../Keys/ApiKey';
 
 let videoIdsList = ['ErfEnD2WA3A', 'JZnlJ2upJv8', 'Km8kIX-8hVs'];

@@ -1,5 +1,6 @@
 const initialState = {
   LolIndexes: [],
+  CompleteIndexArray: [],
 };
 
 const videoIndexs = (state = initialState, action) => {
@@ -10,10 +11,19 @@ const videoIndexs = (state = initialState, action) => {
         LolIndexes: state.LolIndexes.includes(action.payload)
           ? [...state.LolIndexes]
           : [...state.LolIndexes, action.payload],
+        LolIndexes:
+          state.CompleteIndexArray.length === 8
+            ? []
+            : state.LolIndexes.includes(action.payload)
+            ? [...state.LolIndexes]
+            : [...state.LolIndexes, action.payload],
       };
     case 'RESET_IDs':
       return {
+        //LolIndexes: [],
         LolIndexes: state.LolIndexes.length === 8 ? [] : [...state.LolIndexes],
+        CompleteIndexArray:
+          state.LolIndexes.length === 8 ? [...state.LolIndexes] : [],
       };
 
     default:

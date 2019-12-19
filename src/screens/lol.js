@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -27,14 +27,18 @@ let videoIdsList = [
   'URLyBDYHoGo',
 ];
 
-class Lol extends Component {
+class Lol extends React.Component {
   state = {
     play: false,
     loop: true,
     videosPlayed: [],
+    indexArray: [],
     landScapeOrientation: false,
     newPlayListids: [],
-    indexArray: [],
+    getOriginalPlaylist: false,
+    disableNextButton: false,
+    indexedVideo: 0,
+    originalPlayList: false,
   };
 
   onLayout(e) {
@@ -50,6 +54,7 @@ class Lol extends Component {
   _youTubeRef = React.createRef();
 
   componentDidMount() {
+    //this.handleResets();
     this.setState({
       videoIds: videoIdsList,
       play: true,
@@ -81,25 +86,59 @@ class Lol extends Component {
       this.setState({
         play: this.state.play === true ? false : true,
       });
-      console.log(this.props.LolIndexes.LolIndexes);
 
-      return true;
-    } else {
-      try {
-        if (this._youTubeRef.current._isReady) {
-          await this._youTubeRef.current
-            .getVideosIndex()
-            .then(index => {
-              // call a function here, pass index
-              this.state.videosPlayed.includes(index) || null
-                ? null
-                : this.handleUpdate(index);
-            })
-            .catch(err => console.log(err));
-        }
-      } catch (error) {
-        console.log(error);
+      return false;
+    }
+
+    if (this.state.status !== nextState.status) {
+      if (this._youTubeRef.current._isReady) {
+        await this._youTubeRef.current
+          .getVideosIndex()
+          .then(index => {
+            console.log(index);
+            this.setState({
+              indexedVideo: index,
+            });
+
+            if (this.state.indexedVideo !== nextState.indexedVideo) {
+              this.setState({
+                disableNextButton: false,
+                originalPlayList: false,
+              });
+            }
+            // console.log(this.state.videosPlayed);
+            //if (this.state.videosPlayed.length >= 0) {
+            console.log('Videos Played Here');
+
+            const id = this._youTubeRef.current.props.videoIds[index];
+            if (id === 'URLyBDYHoGo') {
+              console.log('Last Id');
+              this.setState({
+                disableNextButton: true,
+                originalPlayList: true,
+              });
+            }
+
+            this.state.videosPlayed.includes(index) || null
+              ? null
+              : this.handleUpdate(index);
+            // }
+
+            //this.state.videosPlayed.includes(index) || null
+            //? null
+            //: this.handleUpdate(index);
+            console.log('Updated');
+            if (this.props.LolIndexes.CompleteIndexArray) {
+              if (this.props.LolIndexes.CompleteIndexArray.length) {
+                this.setState({
+                  videosPlayed: [],
+                });
+              }
+            }
+          })
+          .catch(err => console.log(err));
       }
+
       return true;
     }
   }
@@ -109,23 +148,39 @@ class Lol extends Component {
 
     if (this.state.indexArray.includes(index) || index === -1) {
     } else {
+      const id = this._youTubeRef.current.props.videoIds[index];
+      // if (id === 'URLyBDYHoGo') {
+      //   console.log('Last Id');
+      //   this.setState({
+      //     disableNextButton: true,
+      //     originalPlayList: true,
+      //   });
+      // }
+
       this.setState(
         {
           indexArray: [...this.state.indexArray, index],
         },
         () => {
-          //console.log(this.state.status);
-          const id = this._youTubeRef.current.props.videoIds[index];
-          // console.log(this._youTubeRef.current.props);
+          if (id === 'URLyBDYHoGo') {
+            this.setState({
+              indexArray: [],
+            });
+          }
           this.props.saveId(id);
-          this.handleResets();
+          this.handleResets(id);
         },
       );
     }
   };
 
-  handleResets = () => {
-    this.props.resetIds();
+  handleResets = id => {
+    this.props.resetIds(id);
+  };
+  bringBackOriginalPlayList = () => {
+    this.setState({
+      newPlayListids: [],
+    });
   };
 
   render() {
@@ -194,7 +249,7 @@ class Lol extends Component {
                       source={require('../Images/left-arrow.png')}
                     />
                     <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      Previous
+                      PreviouS
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -205,7 +260,7 @@ class Lol extends Component {
                   }}>
                   <View style={styles.controlIcons}>
                     <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      {this.state.loop ? 'Loop' : 'No Loop'}
+                      {this.state.loop ? 'LooP' : 'No LooP'}
                     </Text>
                     <Image
                       style={styles.ImageStyle}
@@ -214,14 +269,23 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[
+                    styles.nextButtonStyle,
+                    orientationStyles,
+                    {
+                      backgroundColor: this.state.disableNextButton
+                        ? '#fffacd'
+                        : 'gold',
+                    },
+                  ]}
+                  disabled={this.state.disableNextButton}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.nextVideo();
                     }
                   }}>
                   <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>Next</Text>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>NexT</Text>
                     <Image
                       style={styles.ImageStyle}
                       source={require('../Images/right-arrow.png')}
@@ -281,6 +345,19 @@ class Lol extends Component {
                   </View>
                 </TouchableOpacity>
               </View>
+              {this.state.originalPlayList && (
+                <View style={styles.originalPlayListButton}>
+                  <TouchableOpacity
+                    style={[styles.LoopButton, orientationStyles]}
+                    onPress={() => this.bringBackOriginalPlayList()}>
+                    <View style={styles.controlIcons}>
+                      <Text style={{fontSize: 10, color: '#ff00bf'}}>
+                        Original PlayList ?
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -312,6 +389,19 @@ const styles = StyleSheet.create({
     tintColor: '#ff00bf',
     marginLeft: 5,
   },
+  nextButtonStyle: {
+    borderRadius: 10,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  originalPlayListButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
 });
 
 mapstateToProps = state => {
@@ -323,7 +413,7 @@ mapstateToProps = state => {
 mapDispatchToProps = dispatch => {
   return {
     saveId: index => dispatch({type: 'SAVE_ID', payload: index}),
-    resetIds: index => dispatch({type: 'RESET_IDs', payload: ''}),
+    resetIds: id => dispatch({type: 'RESET_IDs', payload: id}),
   };
 };
 
