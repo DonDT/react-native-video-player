@@ -12,7 +12,8 @@ const videoIndexs = (state = initialState, action) => {
           ? [...state.Indexes]
           : [...state.Indexes, action.payload],
         Indexes:
-          state.CompleteIndexArray.length === 9
+          state.CompleteIndexArray.length === 9 ||
+          action.payload === 'BgZh5T4nG_w'
             ? []
             : state.Indexes.includes(action.payload)
             ? [...state.Indexes]
@@ -24,6 +25,10 @@ const videoIndexs = (state = initialState, action) => {
         Indexes: state.Indexes.length === 9 ? [] : [...state.Indexes],
         CompleteIndexArray:
           state.Indexes.length === 9 ? [...state.Indexes] : [],
+      };
+    case 'ORIGINAL_LIST':
+      return {
+        Indexes: [],
       };
 
     default:

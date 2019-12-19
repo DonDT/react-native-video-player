@@ -101,6 +101,16 @@ class MemeRadar extends React.Component {
                   originalPlayList: false,
                 });
               }
+              const id = this._youTubeRef.current.props.videoIds[index];
+              if (id === 'BgZh5T4nG_w') {
+                console.log('Last Id');
+                this.setState({
+                  disableNextButton: true,
+                  originalPlayList: true,
+                  indexArray: [],
+                  videosPlayed: [],
+                });
+              }
 
               this.state.videosPlayed.includes(index) || null
                 ? null
@@ -133,13 +143,11 @@ class MemeRadar extends React.Component {
         },
         () => {
           const id = this._youTubeRef.current.props.videoIds[index];
-          if (id === 'BgZh5T4nG_w') {
-            this.setState({
-              indexArray: [],
-              disableNextButton: true,
-              originalPlayList: true,
-            });
-          }
+          // if (id === 'BgZh5T4nG_w') {
+          //   this.setState({
+          //     indexArray: [],
+          //   });
+          // }
           this.props.getIndex(id);
           this.handleResets();
         },
@@ -155,6 +163,7 @@ class MemeRadar extends React.Component {
     this.setState({
       newPlayListids: [],
     });
+    //this.props.originalList();
   };
 
   render() {
@@ -388,6 +397,7 @@ mapDispatchToProps = dispatch => {
   return {
     getIndex: index => dispatch({type: 'SAVE_INDEX', payload: index}),
     resetIndex: index => dispatch({type: 'RESET_INDEX', payload: ''}),
+    originalList: id => dispatch({type: 'ORIGINAL_LIST', payload: id}),
   };
 };
 

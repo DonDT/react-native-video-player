@@ -116,6 +116,8 @@ class Lol extends React.Component {
               this.setState({
                 disableNextButton: true,
                 originalPlayList: true,
+                indexArray: [],
+                videosPlayed: [],
               });
             }
 
@@ -162,11 +164,11 @@ class Lol extends React.Component {
           indexArray: [...this.state.indexArray, index],
         },
         () => {
-          if (id === 'URLyBDYHoGo') {
-            this.setState({
-              indexArray: [],
-            });
-          }
+          // if (id === 'URLyBDYHoGo') {
+          //   this.setState({
+          //     indexArray: [],
+          //   });
+          // }
           this.props.saveId(id);
           this.handleResets(id);
         },

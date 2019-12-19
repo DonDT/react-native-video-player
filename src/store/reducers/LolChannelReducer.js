@@ -12,7 +12,8 @@ const videoIndexs = (state = initialState, action) => {
           ? [...state.LolIndexes]
           : [...state.LolIndexes, action.payload],
         LolIndexes:
-          state.CompleteIndexArray.length === 8
+          state.CompleteIndexArray.length === 8 ||
+          action.payload === 'URLyBDYHoGo'
             ? []
             : state.LolIndexes.includes(action.payload)
             ? [...state.LolIndexes]
