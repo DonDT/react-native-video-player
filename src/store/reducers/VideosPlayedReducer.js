@@ -21,7 +21,6 @@ const videoIndexs = (state = initialState, action) => {
       };
     case 'RESET_INDEX':
       return {
-        //Indexes: [],
         Indexes: state.Indexes.length === 9 ? [] : [...state.Indexes],
         CompleteIndexArray:
           state.Indexes.length === 9 ? [...state.Indexes] : [],

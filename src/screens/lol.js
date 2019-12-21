@@ -14,13 +14,17 @@ import {withNavigationFocus} from 'react-navigation';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
 import APIKEY from '../Keys/ApiKey';
+import ReusableBottonControl from '../components/reusableBottonControl';
+import fastForwad from '../Images/fast-forward.png';
+import updateArrow from '../Images/update-arrows.png';
+import leftArrow from '../Images/left-arrow.png';
 
 let videoIdsList = [
   'QSqIG5Dl-SM',
   'jM0GePXOdT0',
   'exLTGu_c5fs',
   'Km8kIX-8hVs',
-  //'c9EOCt9kkUo',
+  //'c9EOCt9kkUo', Video did not play
   '-goTfMUabxc',
   'y7pZzp99Jgs',
   '85RhW75xM8U',
@@ -54,7 +58,6 @@ class Lol extends React.Component {
   _youTubeRef = React.createRef();
 
   componentDidMount() {
-    //this.handleResets();
     this.setState({
       videoIds: videoIdsList,
       play: true,
@@ -89,88 +92,83 @@ class Lol extends React.Component {
 
       return false;
     }
-
-    if (this.state.status !== nextState.status) {
-      if (this._youTubeRef.current._isReady) {
-        await this._youTubeRef.current
-          .getVideosIndex()
-          .then(index => {
-            console.log(index);
-            this.setState({
-              indexedVideo: index,
-            });
-
-            if (this.state.indexedVideo !== nextState.indexedVideo) {
+    if (this.props.isFocused) {
+      if (this.state.status !== nextState.status) {
+        if (this._youTubeRef.current._isReady) {
+          await this._youTubeRef.current
+            .getVideosIndex()
+            .then(index => {
               this.setState({
-                disableNextButton: false,
-                originalPlayList: false,
+                indexedVideo: index,
               });
-            }
-            // console.log(this.state.videosPlayed);
-            //if (this.state.videosPlayed.length >= 0) {
-            console.log('Videos Played Here');
 
-            const id = this._youTubeRef.current.props.videoIds[index];
-            if (id === 'URLyBDYHoGo') {
-              console.log('Last Id');
-              this.setState({
-                disableNextButton: true,
-                originalPlayList: true,
-                indexArray: [],
-                videosPlayed: [],
-              });
-            }
-
-            this.state.videosPlayed.includes(index) || null
-              ? null
-              : this.handleUpdate(index);
-            // }
-
-            //this.state.videosPlayed.includes(index) || null
-            //? null
-            //: this.handleUpdate(index);
-            console.log('Updated');
-            if (this.props.LolIndexes.CompleteIndexArray) {
-              if (this.props.LolIndexes.CompleteIndexArray.length) {
+              if (this.state.indexedVideo !== nextState.indexedVideo) {
                 this.setState({
-                  videosPlayed: [],
+                  disableNextButton: false,
+                  originalPlayList: false,
                 });
               }
-            }
-          })
-          .catch(err => console.log(err));
-      }
 
-      return true;
+              const id = this._youTubeRef.current.props.videoIds[index];
+              if (id === 'URLyBDYHoGo') {
+                this.getDuration();
+                this.setState({
+                  disableNextButton: true,
+                  originalPlayList: true,
+                  indexArray: [],
+                  videosPlayed: [],
+                  resetWithTimeOut: true,
+                });
+              }
+
+              this.state.videosPlayed.includes(index) || null
+                ? null
+                : this.handleUpdate(index);
+            })
+            .catch(err => console.log(err));
+        }
+
+        return true;
+      }
     }
   }
+
+  getDuration = () => {
+    if (this._youTubeRef.current) {
+      this._youTubeRef.current
+        .getDuration()
+        .then(duration => {
+          setInterval(() => {
+            this._youTubeRef.current
+              .getCurrentTime()
+              .then(currentTime => {
+                if (duration * 1000 - currentTime * 1000 <= 500) {
+                  this.setState({
+                    newPlayListids: [],
+                  });
+                  clearInterval();
+                }
+              })
+              .catch(error => console.log(error));
+          }, 100);
+        })
+        .catch(error => console.log(error));
+    }
+  };
 
   handleUpdate = index => {
     this.setState({videosPlayed: [...this.state.videosPlayed, index]});
 
     if (this.state.indexArray.includes(index) || index === -1) {
     } else {
-      const id = this._youTubeRef.current.props.videoIds[index];
-      // if (id === 'URLyBDYHoGo') {
-      //   console.log('Last Id');
-      //   this.setState({
-      //     disableNextButton: true,
-      //     originalPlayList: true,
-      //   });
-      // }
-
       this.setState(
         {
           indexArray: [...this.state.indexArray, index],
         },
         () => {
-          // if (id === 'URLyBDYHoGo') {
-          //   this.setState({
-          //     indexArray: [],
-          //   });
-          // }
+          const id = this._youTubeRef.current.props.videoIds[index];
           this.props.saveId(id);
-          this.handleResets(id);
+          this.handleResets();
         },
       );
     }
@@ -180,6 +178,7 @@ class Lol extends React.Component {
     this.props.resetIds(id);
   };
   bringBackOriginalPlayList = () => {
+    clearInterval();
     this.setState({
       newPlayListids: [],
     });
@@ -227,49 +226,31 @@ class Lol extends React.Component {
 
             <View
               style={{
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: landScapeOrientation ? 'center' : 'center',
+                justifyContent: landScapeOrientation ? 'center' : 'center',
                 marginTop: landScapeOrientation ? 8 : 60,
                 flexDirection: landScapeOrientation ? 'row' : null,
               }}>
               <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.previousVideo();
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Image
-                      style={{
-                        width: 9,
-                        height: 9,
-                        tintColor: '#ff00bf',
-                        marginRight: 5,
-                      }}
-                      source={require('../Images/left-arrow.png')}
-                    />
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      PreviouS
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="PreviouS"
+                  icon={leftArrow}
+                />
+
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     this.setState(state => ({loop: !state.loop}));
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      {this.state.loop ? 'LooP' : 'No LooP'}
-                    </Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/update-arrows.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
+                  }}
+                  textTitle={this.state.loop ? 'LooP' : 'No LooP'}
+                  icon={updateArrow}
+                />
                 <TouchableOpacity
                   style={[
                     styles.nextButtonStyle,
@@ -301,56 +282,48 @@ class Lol extends React.Component {
                   flexDirection: 'row',
                   marginTop: landScapeOrientation ? null : 10,
                 }}>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(15);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>15s</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="15s"
+                  icon={fastForwad}
+                />
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(2 * 60);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>2 Min</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="2 Min"
+                  icon={fastForwad}
+                />
+
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(5 * 60);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>5 Min</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
+                  }}
+                  textTitle="5 Min"
+                  icon={fastForwad}
+                />
               </View>
               {this.state.originalPlayList && (
                 <View style={styles.originalPlayListButton}>
                   <TouchableOpacity
-                    style={[styles.LoopButton, orientationStyles]}
+                    style={[
+                      styles.Button,
+                      orientationStyles,
+                      {
+                        marginRight: landScapeOrientation ? 3 : null,
+                      },
+                    ]}
                     onPress={() => this.bringBackOriginalPlayList()}>
                     <View style={styles.controlIcons}>
                       <Text style={{fontSize: 10, color: '#ff00bf'}}>
@@ -372,7 +345,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  LoopButton: {
+  Button: {
     backgroundColor: 'gold',
     borderRadius: 10,
     padding: 8,
@@ -399,7 +372,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   originalPlayListButton: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,

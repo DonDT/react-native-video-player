@@ -11,7 +11,6 @@ import {
 
 import {DrawerNavigatorItems} from 'react-navigation-drawer';
 import {NavigationActions} from 'react-navigation';
-import {connect} from 'react-redux';
 
 class CustomDrawer extends Component {
   navigateToScreen = route => () => {
@@ -54,33 +53,10 @@ const styles = StyleSheet.create({
     fontWeight: '100',
     marginBottom: 15,
   },
-  firstIcons: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rightDisplay: {
-    marginRight: 20,
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    backgroundColor: '#0000ff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   Mainicon: {
     width: 150,
     height: 150,
   },
-  icon: {
-    width: 45,
-    height: 45,
-  },
 });
 
-const mapStateToProps = state => {
-  return {};
-};
-
-export default connect(mapStateToProps)(CustomDrawer);
+export default CustomDrawer;

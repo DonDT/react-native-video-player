@@ -9,11 +9,13 @@ import {
   Text,
   Image,
 } from 'react-native';
-import YouTube from 'react-native-youtube';
 import {withNavigationFocus} from 'react-navigation';
-import {connect} from 'react-redux';
-import {compose} from 'redux';
 import APIKEY from '../Keys/ApiKey';
+import YouTube from 'react-native-youtube';
+import ReusableBottonControl from '../components/reusableBottonControl';
+import fastForwad from '../Images/fast-forward.png';
+import updateArrow from '../Images/update-arrows.png';
+import leftArrow from '../Images/left-arrow.png';
 
 let videoIdsList = ['ErfEnD2WA3A', 'JZnlJ2upJv8', 'Km8kIX-8hVs'];
 
@@ -27,16 +29,6 @@ class Wtf extends Component {
     };
   }
 
-  _youTubeRef = React.createRef();
-
-  componentDidMount() {
-    this.setState({
-      videoIds: videoIdsList,
-      play: true,
-      landScapeOrientation: false,
-    });
-  }
-
   onLayout(e) {
     const {width, height} = Dimensions.get('window');
     if (width > 415) {
@@ -48,11 +40,21 @@ class Wtf extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.isFocused !== this.props.isFocused) {
+  _youTubeRef = React.createRef();
+
+  componentDidMount() {
+    this.setState({
+      videoIds: videoIdsList,
+      play: true,
+    });
+  }
+
+  async shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.isFocused !== nextProps.isFocused) {
       this.setState({
         play: this.state.play === true ? false : true,
       });
+      return false;
     }
   }
 
@@ -91,6 +93,7 @@ class Wtf extends Component {
               showinfo
               controls={1}
             />
+
             <View
               style={{
                 alignItems: 'center',
@@ -99,52 +102,33 @@ class Wtf extends Component {
                 flexDirection: landScapeOrientation ? 'row' : null,
               }}>
               <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.previousVideo();
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Image
-                      style={{
-                        width: 9,
-                        height: 9,
-                        tintColor: '#ff00bf',
-                        marginRight: 5,
-                      }}
-                      source={require('../Images/left-arrow.png')}
-                    />
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      Previous
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="PreviouS"
+                  icon={leftArrow}
+                />
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     this.setState(state => ({loop: !state.loop}));
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>
-                      {this.state.loop ? 'Loop' : 'No Loop'}
-                    </Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/update-arrows.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
+                  }}
+                  textTitle={this.state.loop ? 'LooP' : 'No LooP'}
+                  icon={updateArrow}
+                />
                 <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  style={[styles.Button, orientationStyles]}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.nextVideo();
                     }
                   }}>
                   <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>Next</Text>
+                    <Text style={{fontSize: 10, color: '#ff00bf'}}>NexT</Text>
                     <Image
                       style={styles.ImageStyle}
                       source={require('../Images/right-arrow.png')}
@@ -160,51 +144,36 @@ class Wtf extends Component {
                   justifyContent: 'center',
                   marginTop: landScapeOrientation ? null : 10,
                 }}>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(15);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>15s</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="15s"
+                  icon={fastForwad}
+                />
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(2 * 60);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>2 Min</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.LoopButton, orientationStyles]}
+                  }}
+                  textTitle="2 Min"
+                  icon={fastForwad}
+                />
+                <ReusableBottonControl
+                  landScapeOrientation={landScapeOrientation}
                   onPress={() => {
                     if (this._youTubeRef.current) {
                       this._youTubeRef.current.seekTo(5 * 60);
                     }
-                  }}>
-                  <View style={styles.controlIcons}>
-                    <Text style={{fontSize: 10, color: '#ff00bf'}}>5 Min</Text>
-                    <Image
-                      style={styles.ImageStyle}
-                      source={require('../Images/fast-forward.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
+                  }}
+                  textTitle="5 Min"
+                  icon={fastForwad}
+                />
               </View>
             </View>
           </View>
@@ -218,7 +187,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  LoopButton: {
+  Button: {
     backgroundColor: 'gold',
     borderRadius: 10,
     padding: 8,

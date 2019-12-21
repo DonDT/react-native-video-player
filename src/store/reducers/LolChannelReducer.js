@@ -21,7 +21,6 @@ const videoIndexs = (state = initialState, action) => {
       };
     case 'RESET_IDs':
       return {
-        //LolIndexes: [],
         LolIndexes: state.LolIndexes.length === 8 ? [] : [...state.LolIndexes],
         CompleteIndexArray:
           state.LolIndexes.length === 8 ? [...state.LolIndexes] : [],

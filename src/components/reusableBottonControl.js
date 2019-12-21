@@ -8,10 +8,10 @@ const ReusableBottonControl = props => {
     <View>
       <TouchableOpacity
         style={[
-          styles.LoopButton,
+          styles.Button,
           {
-            height: {landScapeOrientation} ? 25 : 40,
-            padding: {landScapeOrientation} ? 7 : 8,
+            height: landScapeOrientation ? 25 : 40,
+            padding: landScapeOrientation ? 7 : 8,
           },
         ]}
         onPress={props.onPress}>
@@ -20,8 +20,11 @@ const ReusableBottonControl = props => {
             {props.textTitle}
           </Text>
           <Image
-            style={[styles.ImageStyle, {marginLeft: 5}]}
-            source={{uri: `${props.icon}`}}
+            style={[
+              styles.ImageStyle,
+              {marginLeft: 5, marginRight: props.previous ? 5 : null},
+            ]}
+            source={props.icon}
           />
         </View>
       </TouchableOpacity>
@@ -30,7 +33,7 @@ const ReusableBottonControl = props => {
 };
 
 const styles = StyleSheet.create({
-  LoopButton: {
+  Button: {
     backgroundColor: 'gold',
     borderRadius: 10,
     padding: 8,
@@ -42,6 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 8,
   },
   ImageStyle: {
     width: 9,
